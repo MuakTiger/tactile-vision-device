@@ -1,0 +1,14 @@
+# 시각-촉각 대체 보조장치 — Jetson 의존 패키지
+# 설치: pip install -r requirements.txt
+#
+# ⚠️  torch / tensorrt 는 Jetson JetPack SDK에 포함된 버전 사용
+#     pip install 로 별도 설치하지 말 것
+
+# 컴퓨터 비전
+opencv-python==4.10.0.84
+
+# 시리얼 통신
+pyserial==3.5
+
+# 수치 연산
+numpy==1.26.4
