@@ -56,7 +56,7 @@ Raspberry Pi Pico (pico/main.cpp)
 
 ```bash
 # 1. 패키지 설치 (torch, tensorrt는 JetPack에 포함)
-pip install -r requirements.txt
+pip install -r software/requirements.txt
 
 # 2. Depth Anything V2 TRT 엔진을 checkpoints/ 에 배치
 #    파일명: depth_anything_v2_vits.engine
@@ -66,16 +66,16 @@ pip install -r requirements.txt
 
 ```bash
 # 기본 실행
-python main.py
+python software/main.py
 
 # 디버그 시각화 창 포함
-python main.py --debug
+python software/main.py --debug
 
 # 하드웨어 없이 시각화만 (개발/테스트용)
-python main.py --no-hw --debug
+python software/main.py --no-hw --debug
 
 # 시리얼 포트 지정
-python main.py --port /dev/ttyACM1 --debug
+python software/main.py --port /dev/ttyACM1 --debug
 ```
 
 ### 실행 옵션
@@ -119,14 +119,22 @@ static constexpr uint16_t SAFE_MAX = 490;  // 랙 스트로크에 맞게 조정
 
 ```
 tactile-vision-device/
-├── main.py              # 젯슨 메인 파이프라인
-├── requirements.txt
 ├── README.md
 ├── .gitignore
-├── checkpoints/         # TRT 엔진 파일 (git 추적 제외)
-│   └── depth_anything_v2_vits.engine
-└── pico/
-    └── main.cpp         # 피코 펌웨어
+├── software/                         # 소프트웨어
+│   ├── main.py                       # 젯슨 메인 파이프라인
+│   ├── requirements.txt
+│   └── pico/
+│       └── main.cpp                  # Raspberry Pi Pico 펌웨어
+└── hardware/                         # 하드웨어 3D 모델 (STL)
+    ├── parts/                        # 개별 부품
+    │   ├── rack.stl                  # 랙 (직선 기어)
+    │   ├── pinion.stl                # 피니언 (회전 기어)
+    │   └── servo_bracket.stl        # SG90 서보 마운트 브라켓
+    ├── assembly/                     # 구동 단위 조립체
+    │   └── SG90 and Rack and Pinion.stl  # 모터 1개 + 랙앤피니언 1쌍
+    └── full/                         # 전체 출력 장치
+        └── 7_22 set_final.stl        # 24구역 촉각 디스플레이 완성본
 ```
 
 ---
