@@ -1,9 +1,9 @@
 """
 시각장애인을 위한 실시간 시각-촉각 대체 보조장치
-Jetson Orin / AGX Xavier 구동용 메인 파이프라인
+Jetson Orin Developer Kit 구동용 메인 파이프라인
 
 파이프라인:
-  웹캠 → Depth Anything V2 (TensorRT) → 6×4 그리드 → 시리얼 → Pico → PCA9685×2 → SG90×24
+  웹캠 → Depth Anything V2 (TensorRT) → 4×6 그리드(가로6×세로4) → 시리얼 → Pico → PCA9685×2 → SG90×24
 
 실행 예시:
   python main.py --debug                         # 시각화 창 포함 실행
@@ -134,18 +134,17 @@ class HardwareCommunicator:
 # 6×4 그리드 깊이 산출
 # ──────────────────────────────────────────────────────────────────
 def compute_grid(depth_norm: np.ndarray,
-                 grid_h: int = 6,
-                 grid_w: int = 4) -> list:
+                 grid_h: int = 4,
+                 grid_w: int = 6) -> list:
     """
     깊이맵 → 24개 구역 평균값 리스트 (행 우선, 좌→우, 위→아래)
+    가로 6구역 × 세로 4구역 (사람 눈/모니터 비율 기준)
 
     인덱스 배치:
-      [ 0  1  2  3]  ← 1행
-      [ 4  5  6  7]  ← 2행
-      [ 8  9 10 11]  ← 3행  → PCA9685 0x40 (채널 0~11)
-      [12 13 14 15]  ← 4행
-      [16 17 18 19]  ← 5행
-      [20 21 22 23]  ← 6행  → PCA9685 0x41 (채널 0~11)
+      [ 0  1  2  3  4  5]  ← 1행
+      [ 6  7  8  9 10 11]  ← 2행  → PCA9685 0x40 (채널 0~11)
+      [12 13 14 15 16 17]  ← 3행
+      [18 19 20 21 22 23]  ← 4행  → PCA9685 0x41 (채널 0~11)
     """
     result = []
     for row_strip in np.array_split(depth_norm, grid_h, axis=0):
@@ -160,8 +159,8 @@ def compute_grid(depth_norm: np.ndarray,
 def draw_debug(depth_norm: np.ndarray,
                grid_values: list,
                fps: float,
-               grid_h: int = 6,
-               grid_w: int = 4) -> np.ndarray:
+               grid_h: int = 4,
+               grid_w: int = 6) -> np.ndarray:
     """깊이맵에 그리드 오버레이 + FPS 표시"""
     vis = cv2.applyColorMap(depth_norm, cv2.COLORMAP_INFERNO)
     h, w = vis.shape[:2]
@@ -171,7 +170,7 @@ def draw_debug(depth_norm: np.ndarray,
         for c in range(grid_w):
             idx  = r * grid_w + c
             x1, y1 = c * rw, r * rh
-            # 두 보드 경계(인덱스 12) 강조
+            # 두 보드 경계(인덱스 12, 3행 시작) 강조
             border = (0, 255, 255) if idx == 12 else (180, 180, 180)
             cv2.rectangle(vis, (x1, y1), (x1 + rw, y1 + rh), border, 1)
             cv2.putText(
@@ -217,7 +216,7 @@ def main():
     args = parse_args()
 
     PROC_SIZE      = (518, 518)   # Depth Anything V2 ViT-S 최소 입력 (14×37)
-    GRID_H, GRID_W = 6, 4        # 총 24구역 = PCA9685 2보드 × 12채널
+    GRID_H, GRID_W = 4, 6        # 가로 6 × 세로 4 = 24구역 (모니터/눈 비율)
 
     # ── 모델 및 하드웨어 초기화 ──
     logger.info("시스템 초기화 중...")

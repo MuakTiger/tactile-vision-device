@@ -96,8 +96,9 @@ bool parsePacket(const String& packet, uint8_t values[MOTOR_COUNT]) {
 
 // ──────────────────────────────────────────────
 // 24개 서보 일괄 업데이트
-// index  0~11 → pwm1 (PCA9685 0x40) 채널 0~11
-// index 12~23 → pwm2 (PCA9685 0x41) 채널 0~11
+// 가로 6 × 세로 4 그리드 (행 우선)
+// index  0~11 → pwm1 (PCA9685 0x40) 채널 0~11  ← 상단 2행
+// index 12~23 → pwm2 (PCA9685 0x41) 채널 0~11  ← 하단 2행
 // ──────────────────────────────────────────────
 void applyServos(uint8_t values[MOTOR_COUNT]) {
   for (int i = 0; i < BOARD_CH; i++) {

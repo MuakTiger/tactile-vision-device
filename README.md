@@ -10,15 +10,15 @@
 웹캠
  │
  ▼
-Jetson (main.py)
+Jetson Orin Developer Kit (main.py)
  ├─ Depth Anything V2 TensorRT 추론
- ├─ 6×4 그리드 깊이 산출 (24구역)
+ ├─ 4×6 그리드 깊이 산출 (가로6×세로4, 24구역)
  └─ UART 시리얼 전송 "GRID:v0,...,v23\n"
        │
        ▼
 Raspberry Pi Pico (pico/main.cpp)
- ├─ I2C → PCA9685 #1 (0x40) → SG90 × 12 (상단)
- └─ I2C → PCA9685 #2 (0x41) → SG90 × 12 (하단)
+ ├─ I2C → PCA9685 #1 (0x40) → SG90 × 12 (상단 2행)
+ └─ I2C → PCA9685 #2 (0x41) → SG90 × 12 (하단 2행)
               │
               ▼
          랙앤피니언 기구부 (Z축 막대 돌출)
@@ -28,8 +28,8 @@ Raspberry Pi Pico (pico/main.cpp)
 
 | 구성품 | 사양 |
 |---|---|
-| 메인 보드 | NVIDIA Jetson Orin / AGX Xavier |
-| 마이크로컨트롤러 | Raspberry Pi Pico |
+| 메인 보드 | NVIDIA Jetson Orin Developer Kit |
+| 마이크로컨트롤러 | Raspberry Pi Pico (RP2040) |
 | PWM 드라이버 | PCA9685 × 2 (I2C: 0x40, 0x41) |
 | 액추에이터 | SG90 서보모터 × 24 |
 | 기구부 | 랙앤피니언 방식 Z축 돌출 핀 |
@@ -37,13 +37,13 @@ Raspberry Pi Pico (pico/main.cpp)
 
 ## 그리드 배치
 
+가로 6구역 × 세로 4구역 (사람 눈/모니터 비율 기준)
+
 ```
-[ 0][ 1][ 2][ 3]  ← 1행
-[ 4][ 5][ 6][ 7]  ← 2행
-[ 8][ 9][10][11]  ← 3행  } PCA9685 0x40
-[12][13][14][15]  ← 4행
-[16][17][18][19]  ← 5행
-[20][21][22][23]  ← 6행  } PCA9685 0x41
+[ 0][ 1][ 2][ 3][ 4][ 5]  ← 1행
+[ 6][ 7][ 8][ 9][10][11]  ← 2행  } PCA9685 0x40 (채널 0~11)
+[12][13][14][15][16][17]  ← 3행
+[18][19][20][21][22][23]  ← 4행  } PCA9685 0x41 (채널 0~11)
 ```
 
 깊이값이 클수록 (물체가 가까울수록) 해당 구역의 핀이 더 높이 돌출됩니다.
@@ -92,7 +92,8 @@ python main.py --port /dev/ttyACM1 --debug
 
 ## 피코 펌웨어 빌드
 
-[arduino-pico 코어](https://github.com/earlephilhower/arduino-pico) 기반으로 빌드합니다.
+**Raspberry Pi Pico (RP2040)** 용 펌웨어입니다.  
+[arduino-pico 코어](https://github.com/earlephilhower/arduino-pico) (RP2040용 Arduino 지원 코어)를 사용해 Arduino IDE 또는 PlatformIO로 빌드합니다.
 
 **의존 라이브러리:**
 - `Adafruit PWM Servo Driver Library`
