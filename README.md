@@ -4,6 +4,26 @@
 
 ---
 
+## Hardware Preview
+
+<a href="hardware/full/7_22 set_final.stl">
+  <img src="https://img.shields.io/badge/View%203D%20Model-STL-blue?style=for-the-badge&logo=autodesk" alt="View 3D Model"/>
+</a>
+
+> Click the badge above, or click the STL file directly on GitHub to launch the interactive 3D viewer.
+
+**[→ Open Full Assembly STL (interactive 3D viewer)](hardware/full/7_22%20set_final.stl)**
+
+| Part | STL |
+|---|---|
+| Full Assembly (24-zone tactile display) | [7_22 set_final.stl](hardware/full/7_22%20set_final.stl) |
+| Servo + Rack & Pinion unit | [SG90 and Rack and Pinion.stl](hardware/assembly/SG90%20and%20Rack%20and%20Pinion.stl) |
+| Rack | [rack.stl](hardware/parts/rack.stl) |
+| Pinion | [pinion.stl](hardware/parts/pinion.stl) |
+| Servo bracket | [servo_bracket.stl](hardware/parts/servo_bracket.stl) |
+
+---
+
 ## Project Structure
 
 ```
