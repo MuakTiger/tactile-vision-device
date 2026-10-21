@@ -21,6 +21,11 @@
 | Rack | [rack.stl](hardware/parts/rack.stl) |
 | Pinion | [pinion.stl](hardware/parts/pinion.stl) |
 | Servo bracket | [servo_bracket.stl](hardware/parts/servo_bracket.stl) |
+| 3-tier stack, assembled (preview only) | [stack_assembled.stl](hardware/stack/stack_assembled.stl) |
+| Tier 2 — Pico, PCA9685 ×2, step-down ×2, battery ×2 | [tier2.stl](hardware/stack/tier2.stl) |
+| Tier 3 — Jetson, power bank, C920 | [tier3.stl](hardware/stack/tier3.stl) |
+| Tier 3 side filler bars ×2 | [tier3_side_fillers.stl](hardware/stack/tier3_side_fillers.stl) |
+| Print plate — tiers 2 + 3 + fillers on one H2D plate | [print_plate_nested.stl](hardware/stack/print_plate_nested.stl) |
 
 ---
 
@@ -36,7 +41,8 @@ tactile-vision-device/
 └── hardware/
     ├── parts/               # rack.stl / pinion.stl / servo_bracket.stl
     ├── assembly/            # SG90 + rack & pinion unit
-    └── full/                # complete 24-zone tactile display
+    ├── full/                # complete 24-zone tactile display (tier 1)
+    └── stack/               # tiers 2–3 housing + generator (stack_tiers.py)
 ```
 
 ---
@@ -83,7 +89,26 @@ Higher depth value = closer object = pin extends further.
 | PWM driver | PCA9685 × 2 (I2C: `0x40`, `0x41`) |
 | Actuator | SG90 servo × 24 |
 | Mechanism | Rack & pinion, Z-axis extrusion (3D printed) |
-| Camera | USB webcam (MJPEG, 720p) |
+| Camera | Logitech C920 (USB, MJPEG 720p) |
+| Servo power | Battery × 2 → step-down × 2, one line per PCA9685 |
+| Jetson power | Power bank |
+| Housing | 3-tier stack, 3D printed (Bambu Lab H2D) |
+
+### Housing (3-tier stack)
+
+```
+tier 1  tactile display (hardware/full)   servos on top, wires drop through 24 slots
+tier 2  200 × 236 × 65 mm                  Pico, PCA9685 ×2, step-down ×2, battery ×2
+tier 3  252 × 250 × 86 mm                  Jetson, power bank, C920 (front window)
+total height ≈ 203 mm
+```
+
+- Each tier sits inside the rim of the tier below; lower tiers are wider.
+- Tier 2 has a center divider that splits the PCA9685 `0x40` and `0x41` power lines left/right. Lower cross dividers separate the battery, step-down and PCA bays. The Pico bay at one end spans both sides.
+- Tiers 2–3 have 12 matching Ø4 holes for cable ties or M3 bolts. The tier 2 floor has 19 cable slots.
+- Parts are fixed with cable ties or tape, so there are no mounting bosses.
+- **One-plate print:** tier 2 sits rotated 90° inside tier 3, 3 mm above its floor, with the two filler bars beside it. Total footprint is 252 × 305 mm. Enable supports so the 3 mm gap under tier 2 is filled. Use **normal(auto)**, not tree(auto): tree support stalls slicing on the large flat floor. Bambu Studio estimate (H2D 0.4, 0.20 mm Standard, PLA Basic): about 16 h 44 m and 783 g.
+- To regenerate after changing dimensions: `pip install trimesh manifold3d networkx`, then `python hardware/stack/stack_tiers.py`. All dimensions are in `PARAMETERS` at the top of the script.
 
 ---
 
